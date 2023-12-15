@@ -1,54 +1,54 @@
 <template>
+  <main>
   <h1>доска</h1>
   <draggable v-model="columns" tag="div" class="workspace">
     <template #item="{ element: column, index: i }">
       <draggable v-model="column.tasks" tag="ul" class="column" :key="i" @end="onTaskDragEnd">
         <template #header>
-        <input
-          v-if="column.showNameInput"
-          v-model="column.name" class="column-name-input column-name" type="text"
-          @keyup.enter="toggleNameInput(i)"
-        />
-        <h3
-          v-else
-          @click="toggleNameInput(i)"
-          class="column-name">
-          <p v-show="column.name === ''">{{ i }}</p>
-          {{ column.name }}
-        </h3>
-        <button class="delete btn" @click="removeColumn(i)">удалить</button>
+          <input
+            v-if="column.showNameInput"
+            v-model="column.name" class="column-name-input column-name" type="text"
+            @keyup.enter="toggleNameInput(i)"
+          />
+          <h3
+            v-else
+            @click="toggleNameInput(i)"
+            class="column-name">
+            <p v-show="column.name === ''">{{ i }}</p>
+            {{ column.name }}
+          </h3>
+          <button class="delete btn" @click="removeColumn(i)">удалить</button>
         </template>
         <template #item="{ element: task, index: j }">
-        <li class="task" :key="j">
-          <input
-            v-if="task.showNameInput"
-            v-model="task.name" class="task-name-input" type="text"
-            @keyup.enter="toggleTaskNameInput(i, j)"
-          />
-          <h4
-            v-else
-            @click="toggleTaskNameInput(i, j)"
-            class="task-name">
-            <p v-show="task.name === ''">{{ j }}</p>
-            {{ task.name }}
-          </h4>
-          <button class="delete btn" @click="removeTask(i, j)">удалить</button>
-        
-        </li>
+          <li class="task" :key="j">
+            <input
+              v-if="task.showNameInput"
+              v-model="task.name" class="task-name-input" type="text"
+              @keyup.enter="toggleTaskNameInput(i, j)"
+            />
+            <h4
+              v-else
+              @click="toggleTaskNameInput(i, j)"
+              class="task-name">
+              <p v-show="task.name === ''">{{ j }}</p>
+              {{ task.name }}
+              {{ task.timeRemaining }}
+            </h4>
+            <button class="delete btn" @click="removeTask(i, j)">удалить</button>
+          </li>
         </template>
         <template #footer>
-        <div class="form-control">
-          <button @click="addItem(i)">создать таск</button>
-        </div>
-      </template>
-      <!-- </ul> -->
-      
-    </draggable>
+          <div class="form-control">
+            <button @click="addItem(i)">создать таск</button>
+          </div>
+        </template>
+      </draggable>
     </template>
   </draggable>
   <div class="form-control">
     <button @click="addColumn">создать колонку</button>
   </div>
+</main>
 </template>
 
 <script>
@@ -59,7 +59,11 @@ export default {
   data() {
     return {
       columns: [],
+      timestamp: ""
     };
+  },
+  created() {
+    setInterval(this.updateTimeRemaining, 1000);
   },
   methods: {
     addColumn() {
@@ -71,10 +75,14 @@ export default {
     },
     addItem(columnIndex) {
       if (this.columns[columnIndex]) {
+
+        const deadline = new Date();
+        deadline.setDate(deadline.getDate() + 1); 
         this.columns[columnIndex].tasks.push({
           name: '',
           showNameInput: false,
-          columnIndex, // новое свойство для хранения индекса колонки
+          columnIndex,
+          deadline: deadline.toISOString(), 
         });
       }
     },
@@ -105,8 +113,21 @@ export default {
       this.columns[columnIndex]?.tasks[taskIndex] && (this.columns[columnIndex].tasks[taskIndex].showNameInput = !this.columns[columnIndex].tasks[taskIndex].showNameInput);
     },
     onTaskDragEnd() {
-      // Метод, вызываемый при завершении перетаскивания задачи
-      // Здесь вы можете выполнить дополнительные действия после перемещения задачи
+      
+    },
+    updateTimeRemaining() {
+      const now = new Date();
+      this.columns.forEach(column => {
+        column.tasks.forEach(task => {
+          const deadlineDate = new Date(task.deadline);
+          const timeDifference = deadlineDate - now;
+          const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+          task.timeRemaining = `${days} д. ${hours} ч. ${minutes} м. ${seconds} с.`;
+        });
+      });
     },
   },
   components: {

@@ -2,13 +2,27 @@
   color: #2c3e50;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 body{
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
+  background-color: #BFCFD7;
   
+}
+main
+{
+
+  width: calc(100vw - 326px);
+}
+.wrapper{
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  width: 100vw;
+
 }
 li{
   list-style: none;
@@ -23,7 +37,7 @@ li{
 .workspace
 {
   background-color: #BFCFD7;
-  min-height: 100vh;
+  min-height: calc(70vh);
   padding: 20px;
   display: flex;
   align-items: flex-start;
@@ -106,7 +120,7 @@ button{
   color: #E7E8EA;
   font-family: monospace;
   position:absolute;
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
 }

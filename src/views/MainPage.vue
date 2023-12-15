@@ -1,4 +1,5 @@
 <template>
+  <main>
   <div class="board-system">
     <ul class="board-list">
       <li class="board" :key="i" v-for="(item,i) in items" @click="navigateToBoard">
@@ -27,6 +28,7 @@
       </li>
     </ul>
   </div>
+</main>
 </template>
 <script>
 
