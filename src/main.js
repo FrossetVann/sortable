@@ -6,6 +6,8 @@ import RegPage from './views/RegPage'
 import MainPage from './views/MainPage'
 import TestGrpc from './components/TestGrpc'
 import './theme.css'
+// import { UserV1Client } from "./gencode/user_v1/service.client";
+
 
 const app = createApp(App)
 

@@ -10,22 +10,18 @@ export default createRouter({
       path: '/Main',
       name: 'MainPage',
       component: MainPage,
-
     },
     {
-      path: '/board',
+      path: '/board/:projectId', // Добавляем динамический сегмент для projectId
       name: 'BoardComp',
       component: BoardComp,
+      props: true, // Позволяет передавать параметры как props
     },
     {
       path: '/autho',
       name: 'RegPage',
       component: RegPage,
-      alias: '/'
+      alias: '/',
     },
-  ]
-})
-
-
-
-
+  ],
+});

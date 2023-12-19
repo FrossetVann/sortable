@@ -1,9 +1,9 @@
 <template>
   <main>
-  <h1>доска</h1>
-  <draggable v-model="columns" tag="div" class="workspace">
-    <template #item="{ element: column, index: i }">
-      <draggable v-model="column.tasks" tag="ul" class="column" :key="i" @end="onTaskDragEnd">
+    <h1>{{ projectName }} - Доска</h1>
+    <draggable v-model="boardData.columns" tag="div" class="workspace">
+      <template #item="{ element: column, index: i }">
+        <draggable v-model="column.tasks" tag="ul" class="column" :key="i" @end="onTaskDragEnd">
         <template #header>
           <input
             v-if="column.showNameInput"
@@ -32,6 +32,7 @@
               class="task-name">
               <p v-show="task.name === ''">{{ j }}</p>
               {{ task.name }}
+              {{ task.deadline }}
               {{ task.timeRemaining }}
             </h4>
             <button class="delete btn" @click="removeTask(i, j)">удалить</button>
@@ -43,35 +44,50 @@
           </div>
         </template>
       </draggable>
-    </template>
-  </draggable>
-  <div class="form-control">
-    <button @click="addColumn">создать колонку</button>
-  </div>
-</main>
+      </template>
+    </draggable>
+    <div class="form-control">
+      <button @click="addColumn">создать колонку</button>
+    </div>
+  </main>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import draggable from 'vuedraggable';
+import { projects } from '../projects.js';
 
 export default {
+  props: ['projectId'],
   data() {
     return {
-      columns: [],
-      timestamp: ""
+      boardData: {
+        columns: [],
+      },
+      projectName: '',
     };
   },
+  watch: {
+    projectId: 'loadData',
+  },
   created() {
-    setInterval(this.updateTimeRemaining, 1000);
+    this.loadData();
   },
   methods: {
+    loadData() {
+      const project = projects.find((p) => p.id === parseInt(this.projectId));
+      if (project) {
+        this.projectName = project.name;
+        this.boardData.columns = project.columns;
+      }
+    },
     addColumn() {
-      this.columns.push({
-        name: '',
+      const newColumn = {
+        name: 'Новая колонка',
         tasks: [],
-        showNameInput: false,
-      });
+        order: this.boardData.columns.length + 1,
+      };
+      this.boardData.columns.push(newColumn);
     },
     addItem(columnIndex) {
       if (this.columns[columnIndex]) {
@@ -128,6 +144,12 @@ export default {
           task.timeRemaining = `${days} д. ${hours} ч. ${minutes} м. ${seconds} с.`;
         });
       });
+    },
+  },
+  computed: {
+    // Преобразование порядка колонок в массив колонок
+    columns() {
+      return this.boardData.columns.sort((a, b) => a.order - b.order);
     },
   },
   components: {

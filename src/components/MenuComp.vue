@@ -11,12 +11,12 @@
             </div>
         </div>
         <div class="navigation">
-            <p>Доски</p>
+            <a @click="navigateToMain" >Доски</a>
             <p>Участники</p>
         </div>
         <div class="user-board">
             <div class="new-board">
-                <h3  @click="navigateToMain">Мои доски</h3>
+                <h3 >Мои доски</h3>
                 <button @click="addNewNote">+</button>
             </div>
             <input class="input" type="text" v-model.trim="inputValue" @keypress.enter="addNewNote">
